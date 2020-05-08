@@ -20,3 +20,4 @@ RUN microdnf update -y && \
 	rm -rf /var/cache/yum
 
 COPY --from=builder /go/src/github.com/coreos/flannel/dist/flanneld /usr/local/bin
+

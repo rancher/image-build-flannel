@@ -16,4 +16,4 @@ image-scan:
 image-manifest:
 	docker image inspect ranchertest/flannel:$(TAG)
 	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest create ranchertest/flannel:$(TAG) \
-		$(shell docker image inspect ranchertest/flannel:$(TAG) | jq -r \'.[] | .RepoDigests[0]\')
+		$(shell docker image inspect ranchertest/flannel:$(TAG) | jq -r '.[] | .RepoDigests[0]')
