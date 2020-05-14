@@ -16,8 +16,9 @@ RUN cd /go/src/github.com/coreos/flannel && \
 	make dist/flanneld
 
 FROM ubi
-RUN microdnf update -y    && \ 
-	rm -rf /var/cache/yum && \
+RUN microdnf update -y           && \
+    microdnf install -y iptables && \
+    rm -rf /var/cache/yum        && \
     mkdir -p /opt/bin
 
 COPY --from=builder /go/src/github.com/coreos/flannel/dist/flanneld /opt/bin
