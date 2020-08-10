@@ -1,4 +1,4 @@
-# ranchertest/flannel
+# rancher/flannel
 
 ## Build
 

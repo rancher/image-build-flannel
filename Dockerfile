@@ -1,5 +1,5 @@
 ARG UBI_IMAGE=registry.access.redhat.com/ubi7/ubi-minimal:latest
-ARG GO_IMAGE=briandowns/rancher-build-base:v0.1.0
+ARG GO_IMAGE=rancher/build-base:v1.14.2
 
 FROM ${UBI_IMAGE} as ubi
 
@@ -13,7 +13,7 @@ RUN git clone --depth=1 https://github.com/coreos/flannel.git /go/src/github.com
 RUN cd /go/src/github.com/coreos/flannel && \
     git fetch --all --tags --prune       && \
     git checkout tags/${TAG} -b ${TAG}   && \
-	make dist/flanneld
+    make dist/flanneld
 
 FROM ubi
 RUN microdnf update -y                                           && \
