@@ -21,10 +21,11 @@ RUN cd /go/src/github.com/rancher/flannel && \
     make dist/flanneld
 
 FROM ubi
-RUN microdnf update -y                                  && \
-    microdnf install -y yum                             && \
-    yum install -y ca-certificates strongswan net-tools && \
-    rm -rf /var/cache/yum                               && \
+RUN microdnf update -y          && \
+    microdnf install -y yum     && \
+    yum install -y ca-certificates \
+    strongswan net-tools which  && \
+    rm -rf /var/cache/yum       && \
     mkdir -p /opt/bin
 
 COPY --from=builder /tmp/xtables/bin/* /usr/sbin/
