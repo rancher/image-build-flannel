@@ -1,4 +1,4 @@
-# rancher/flannel
+# rancher/hardened-flannel
 
 ## Build
 
