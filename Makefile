@@ -1,19 +1,41 @@
 SEVERITIES = HIGH,CRITICAL
 
-.PHONY: all
-all:
-	docker build --build-arg TAG=$(TAG) -t rancher/hardened-flannel:$(TAG) .
+ifeq ($(ARCH),)
+ARCH=$(shell go env GOARCH)
+endif
+
+ORG ?= rancher
+PKG ?= github.com/coreos/flannel
+SRC ?= github.com/rancher/flannel
+TAG ?= v0.13.0-rancher1
+
+ifneq ($(DRONE_TAG),)
+TAG := $(DRONE_TAG)
+endif
+
+.PHONY: image-build
+image-build:
+	docker build \
+		--build-arg ARCH=$(ARCH) \
+		--build-arg PKG=$(PKG) \
+		--build-arg SRC=$(SRC) \
+		--build-arg TAG=$(TAG) \
+		--tag $(ORG)/hardened-flannel:$(TAG) \
+		--tag $(ORG)/hardened-flannel:$(TAG)-$(ARCH) \
+	.
 
 .PHONY: image-push
 image-push:
-	docker push rancher/hardened-flannel:$(TAG) >> /dev/null
-
-.PHONY: scan
-image-scan:
-	trivy --severity $(SEVERITIES) --no-progress --skip-update --ignore-unfixed rancher/hardened-flannel:$(TAG)
+	docker push $(ORG)/hardened-flannel:$(TAG)-$(ARCH)
 
 .PHONY: image-manifest
 image-manifest:
-	docker image inspect rancher/hardened-flannel:$(TAG)
-	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest create rancher/hardened-flannel:$(TAG) \
-		$(shell docker image inspect rancher/hardened-flannel:$(TAG) | jq -r '.[] | .RepoDigests[0]')
+	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest create --amend \
+		$(ORG)/hardened-flannel:$(TAG) \
+		$(ORG)/hardened-flannel:$(TAG)-$(ARCH)
+	DOCKER_CLI_EXPERIMENTAL=enabled docker manifest push \
+		$(ORG)/hardened-flannel:$(TAG)
+
+.PHONY: image-scan
+image-scan:
+	trivy --severity $(SEVERITIES) --no-progress --ignore-unfixed $(ORG)/hardened-flannel:$(TAG)
