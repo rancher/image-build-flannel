@@ -6,9 +6,9 @@ endif
 
 BUILD_META=-build$(shell date +%Y%m%d)
 ORG ?= rancher
-PKG ?= github.com/coreos/flannel
-SRC ?= github.com/rancher/flannel
-TAG ?= v0.13.0-rancher1$(BUILD_META)
+PKG ?= github.com/flannel-io/flannel
+SRC ?= github.com/flannel-io/flannel
+TAG ?= v0.14.0$(BUILD_META)
 
 ifneq ($(DRONE_TAG),)
 TAG := $(DRONE_TAG)
