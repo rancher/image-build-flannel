@@ -1,5 +1,5 @@
 ARG UBI_IMAGE=registry.access.redhat.com/ubi7/ubi-minimal:latest
-ARG GO_IMAGE=rancher/hardened-build-base:v1.15.8b5
+ARG GO_IMAGE=rancher/hardened-build-base:v1.16.7b7
 FROM ${UBI_IMAGE} as ubi
 FROM ${GO_IMAGE} as builder
 # setup required packages
@@ -12,7 +12,7 @@ RUN set -x \
     make
 # setup the build
 ARG ARCH="amd64"
-ARG K3S_ROOT_VERSION="v0.8.1"
+ARG K3S_ROOT_VERSION="v0.9.1"
 ADD https://github.com/rancher/k3s-root/releases/download/${K3S_ROOT_VERSION}/k3s-root-xtables-${ARCH}.tar /opt/xtables/k3s-root-xtables.tar
 RUN tar xvf /opt/xtables/k3s-root-xtables.tar -C /opt/xtables
 ARG TAG="v0.14.0"
