@@ -28,7 +28,8 @@ image-build:
 		--build-arg TAG=$(TAG:$(BUILD_META)=) \
 		--tag $(ORG)/hardened-flannel:$(TAG) \
 		--tag $(ORG)/hardened-flannel:$(TAG)-$(ARCH) \
-	.
+		. \
+        -f Dockerfile.$(ARCH)
 
 .PHONY: image-push
 image-push:

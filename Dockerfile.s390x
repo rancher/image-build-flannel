@@ -1,0 +1,35 @@
+ARG UBI_IMAGE=registry.access.redhat.com/ubi7/ubi-minimal:latest
+ARG GO_IMAGE=rancher/hardened-build-base:v1.16.9b7
+FROM ${UBI_IMAGE} as ubi
+FROM ${GO_IMAGE} as builder
+# setup required packages
+RUN set -x \
+ && apk --no-cache add \
+    file \
+    gcc \
+    git \
+    linux-headers \
+    make
+# setup the build
+ARG ARCH="s390x"
+ARG TAG="v0.14.0-dual-stack"
+ARG PKG="github.com/flannel-io/flannel"
+ARG SRC="github.com/flannel-io/flannel"
+RUN git clone --depth=1 https://${SRC}.git $GOPATH/src/${PKG}
+WORKDIR $GOPATH/src/${PKG}
+RUN git fetch --all --tags --prune
+RUN git checkout tags/${TAG} -b ${TAG}
+# build and assert statically linked executable(s)
+ENV GO_LDFLAGS="-X ${PKG}/version.Version=${TAG}"
+RUN go-build-static.sh -gcflags=-trimpath=${GOPATH}/src -o bin/flanneld .
+RUN go-assert-static.sh bin/*
+RUN install -s bin/* /usr/local/bin
+RUN flanneld --version
+
+FROM ubi
+RUN microdnf update -y          && \
+    microdnf install -y yum ipset iproute    && \
+    yum install -y ca-certificates \
+    strongswan net-tools which  && \
+    rm -rf /var/cache/yum
+COPY --from=builder /usr/local/bin/ /opt/bin/
