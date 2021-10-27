@@ -9,6 +9,11 @@ ORG ?= rancher
 PKG ?= github.com/flannel-io/flannel
 SRC ?= github.com/flannel-io/flannel
 TAG ?= v0.15.1$(BUILD_META)
+K3S_ROOT_VERSION ?= v0.9.1
+
+ifeq ($(ARCH),"s390x")
+K3S_ROOT_VERSION = v0.10.0-rc.0
+endif
 
 ifneq ($(DRONE_TAG),)
 TAG := $(DRONE_TAG)
@@ -28,7 +33,8 @@ image-build:
 		--build-arg TAG=$(TAG:$(BUILD_META)=) \
 		--tag $(ORG)/hardened-flannel:$(TAG) \
 		--tag $(ORG)/hardened-flannel:$(TAG)-$(ARCH) \
-	.
+		--build-arg K3S_ROOT_VERSION=$(K3S_ROOT_VERSION) \
+		.
 
 .PHONY: image-push
 image-push:
