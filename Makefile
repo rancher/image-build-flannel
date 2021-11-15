@@ -9,11 +9,7 @@ ORG ?= rancher
 PKG ?= github.com/flannel-io/flannel
 SRC ?= github.com/flannel-io/flannel
 TAG ?= v0.15.1$(BUILD_META)
-K3S_ROOT_VERSION ?= v0.9.1
-
-ifeq ($(ARCH),s390x)
-K3S_ROOT_VERSION = v0.10.0-rc.0
-endif
+K3S_ROOT_VERSION ?= v0.10.1
 
 ifneq ($(DRONE_TAG),)
 TAG := $(DRONE_TAG)
