@@ -36,7 +36,7 @@ FROM ubi
 RUN microdnf update -y          && \
     microdnf install -y yum     && \
     yum install -y ca-certificates \
-    strongswan net-tools which  && \
+    net-tools which  && \
     rm -rf /var/cache/yum
 COPY --from=builder /opt/xtables/bin/ /usr/sbin/
 COPY --from=builder /usr/local/bin/ /opt/bin/
