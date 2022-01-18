@@ -12,7 +12,7 @@ RUN set -x \
     make
 # setup the build
 ARG ARCH="amd64"
-ARG K3S_ROOT_VERSION="v0.9.1"
+ARG K3S_ROOT_VERSION="v0.11.0"
 ADD https://github.com/rancher/k3s-root/releases/download/${K3S_ROOT_VERSION}/k3s-root-xtables-${ARCH}.tar /opt/xtables/k3s-root-xtables.tar
 RUN tar xvf /opt/xtables/k3s-root-xtables.tar -C /opt/xtables
 ARG TAG="v0.16.1"
