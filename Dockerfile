@@ -1,4 +1,4 @@
-ARG UBI_IMAGE=registry.access.redhat.com/ubi8/ubi-minimal:latest
+ARG UBI_IMAGE=registry.access.redhat.com/ubi7/ubi-minimal:latest
 ARG GO_IMAGE=rancher/hardened-build-base:v1.16.12b7
 FROM ${UBI_IMAGE} as ubi
 FROM ${GO_IMAGE} as builder
@@ -36,7 +36,7 @@ FROM ubi
 RUN microdnf update -y          && \
     microdnf install -y yum     && \
     yum install -y ca-certificates \
-    net-tools which  && \
+    strongswan net-tools which  && \
     rm -rf /var/cache/yum
 COPY --from=builder /opt/xtables/bin/ /usr/sbin/
 COPY --from=builder /usr/local/bin/ /opt/bin/
