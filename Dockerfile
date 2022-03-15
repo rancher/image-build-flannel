@@ -1,5 +1,5 @@
 ARG UBI_IMAGE=registry.access.redhat.com/ubi7/ubi-minimal:latest
-ARG GO_IMAGE=rancher/hardened-build-base:v1.16.12b7
+ARG GO_IMAGE=rancher/hardened-build-base:v1.17.7b7
 FROM ${UBI_IMAGE} as ubi
 FROM ${GO_IMAGE} as builder
 # setup required packages
@@ -15,7 +15,7 @@ ARG ARCH="amd64"
 ARG K3S_ROOT_VERSION="v0.11.0"
 ADD https://github.com/rancher/k3s-root/releases/download/${K3S_ROOT_VERSION}/k3s-root-xtables-${ARCH}.tar /opt/xtables/k3s-root-xtables.tar
 RUN tar xvf /opt/xtables/k3s-root-xtables.tar -C /opt/xtables
-ARG TAG="v0.16.1"
+ARG TAG="v0.17.0"
 ARG PKG="github.com/flannel-io/flannel"
 ARG SRC="github.com/flannel-io/flannel"
 RUN git clone --depth=1 https://${SRC}.git $GOPATH/src/${PKG}
