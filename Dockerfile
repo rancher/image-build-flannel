@@ -1,10 +1,10 @@
-ARG UBI_IMAGE=registry.access.redhat.com/ubi7/ubi-minimal:latest
+ARG UBI_IMAGE=registry.suse.com/bci/bci-micro:latest
 ARG GO_IMAGE=rancher/hardened-build-base:v1.17.7b7
-FROM ${UBI_IMAGE} as ubi
+FROM ${UBI_IMAGE} as bci
 FROM ${GO_IMAGE} as builder
 # setup required packages
-RUN set -x \
- && apk --no-cache add \
+RUN set -x && \
+    apk --no-cache add \
     file \
     gcc \
     git \
@@ -27,16 +27,16 @@ ENV GO_LDFLAGS="-X ${PKG}/version.Version=${TAG}"
 RUN go-build-static.sh -gcflags=-trimpath=${GOPATH}/src -o bin/flanneld .
 RUN go-assert-static.sh bin/*
 RUN if [ "${ARCH}" != "s390x" ]; then \
-      go-assert-boring.sh bin/* ; \
+    go-assert-boring.sh bin/* ; \
     fi
 RUN install -s bin/* /usr/local/bin
 RUN flanneld --version
 
-FROM ubi
-RUN microdnf update -y          && \
-    microdnf install -y yum     && \
-    yum install -y ca-certificates \
-    strongswan net-tools which  && \
-    rm -rf /var/cache/yum
+FROM bci
+#RUN zypper       
+#     microdnf install -y yum     && \
+#     yum install -y ca-certificates \
+#     strongswan net-tools which  && \
+#     rm -rf /var/cache/yum
 COPY --from=builder /opt/xtables/bin/ /usr/sbin/
 COPY --from=builder /usr/local/bin/ /opt/bin/
