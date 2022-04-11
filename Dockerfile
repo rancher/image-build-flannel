@@ -1,4 +1,4 @@
-ARG UBI_IMAGE=registry.suse.com/bci/bci-micro:latest
+ARG UBI_IMAGE=registry.suse.com/bci/bci-base:15.3.17.11.11
 ARG GO_IMAGE=rancher/hardened-build-base:v1.17.7b7
 FROM ${UBI_IMAGE} as bci
 FROM ${GO_IMAGE} as builder
@@ -33,10 +33,8 @@ RUN install -s bin/* /usr/local/bin
 RUN flanneld --version
 
 FROM bci
-#RUN zypper       
-#     microdnf install -y yum     && \
-#     yum install -y ca-certificates \
-#     strongswan net-tools which  && \
-#     rm -rf /var/cache/yum
+RUN zypper update -y && \
+    zypper install -y ca-certificates strongswan net-tools && \
+    zypper clean --all
 COPY --from=builder /opt/xtables/bin/ /usr/sbin/
 COPY --from=builder /usr/local/bin/ /opt/bin/
