@@ -1,6 +1,6 @@
-ARG UBI_IMAGE=registry.suse.com/bci/bci-base:15.3.17.11.11
+ARG BCI_IMAGE=registry.suse.com/bci/bci-base:15.3.17.11.11
 ARG GO_IMAGE=rancher/hardened-build-base:v1.17.7b7
-FROM ${UBI_IMAGE} as bci
+FROM ${BCI_IMAGE} as bci
 FROM ${GO_IMAGE} as builder
 # setup required packages
 RUN set -x && \
