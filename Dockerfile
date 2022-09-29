@@ -33,6 +33,7 @@ RUN install -s bin/* /usr/local/bin
 RUN flanneld --version
 
 FROM bci
-RUN zypper install -y which strongswan net-tools
+RUN zypper install -y which gawk strongswan net-tools && \
+    zypper clean -a
 COPY --from=builder /opt/xtables/bin/ /usr/sbin/
 COPY --from=builder /usr/local/bin/ /opt/bin/
