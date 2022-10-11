@@ -1,6 +1,6 @@
-ARG UBI_IMAGE=registry.access.redhat.com/ubi7/ubi-minimal:latest
+ARG BCI_IMAGE=registry.suse.com/bci/bci-base:latest
 ARG GO_IMAGE=rancher/hardened-build-base:v1.17.7b7
-FROM ${UBI_IMAGE} as ubi
+FROM ${BCI_IMAGE} as bci
 FROM ${GO_IMAGE} as builder
 # setup required packages
 RUN set -x \
@@ -32,11 +32,8 @@ RUN if [ "${ARCH}" != "s390x" ]; then \
 RUN install -s bin/* /usr/local/bin
 RUN flanneld --version
 
-FROM ubi
-RUN microdnf update -y          && \
-    microdnf install -y yum     && \
-    yum install -y ca-certificates \
-    strongswan net-tools which  && \
-    rm -rf /var/cache/yum
+FROM bci
+RUN zypper install -y which gawk strongswan net-tools && \
+    zypper clean -a
 COPY --from=builder /opt/xtables/bin/ /usr/sbin/
 COPY --from=builder /usr/local/bin/ /opt/bin/
