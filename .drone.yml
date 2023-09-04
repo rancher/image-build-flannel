@@ -10,7 +10,7 @@ platform:
 steps:
 - name: build
   pull: always
-  image: rancher/hardened-build-base:v1.20.4b11
+  image: rancher/hardened-build-base:v1.20.7b3
   commands:
   - make DRONE_TAG=${DRONE_TAG}
   volumes:
@@ -24,7 +24,7 @@ steps:
       - refs/tags/*
 
 - name: publish
-  image: rancher/hardened-build-base:v1.20.4b11
+  image: rancher/hardened-build-base:v1.20.7b3
   commands:
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   - make DRONE_TAG=${DRONE_TAG} image-push
@@ -41,7 +41,7 @@ steps:
     - tag
 
 - name: scan
-  image: rancher/hardened-build-base:v1.20.4b11
+  image: rancher/hardened-build-base:v1.20.7b3
   commands:
   - make DRONE_TAG=${DRONE_TAG} image-scan
   volumes:
@@ -71,7 +71,7 @@ platform:
 steps:
 - name: build
   pull: always
-  image: rancher/hardened-build-base:v1.20.4b11
+  image: rancher/hardened-build-base:v1.20.7b3
   commands:
   - make DRONE_TAG=${DRONE_TAG}
   volumes:
@@ -85,7 +85,7 @@ steps:
       - refs/tags/*
 
 - name: publish
-  image: rancher/hardened-build-base:v1.20.4b11
+  image: rancher/hardened-build-base:v1.20.7b3
   commands:
   - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   - make DRONE_TAG=${DRONE_TAG} image-push
@@ -102,7 +102,7 @@ steps:
     - tag
 
 - name: scan
-  image: rancher/hardened-build-base:v1.20.4b11
+  image: rancher/hardened-build-base:v1.20.7b3
   commands:
   - make DRONE_TAG=${DRONE_TAG} image-scan
   volumes:
@@ -135,7 +135,7 @@ node:
 steps:
 - name: build
   pull: always
-  image: rancher/hardened-build-base:v1.20.4b11
+  image: rancher/hardened-build-base:v1.20.7b3
   failure: ignore
   commands:
     - make DRONE_TAG=${DRONE_TAG}
@@ -150,7 +150,7 @@ steps:
       - refs/tags/*
 
 - name: publish
-  image: rancher/hardened-build-base:v1.20.4b11
+  image: rancher/hardened-build-base:v1.20.7b3
   failure: ignore
   commands:
     - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
