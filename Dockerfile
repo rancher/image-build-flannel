@@ -15,7 +15,7 @@ ARG ARCH="amd64"
 ARG K3S_ROOT_VERSION="v0.12.2"
 ADD https://github.com/rancher/k3s-root/releases/download/${K3S_ROOT_VERSION}/k3s-root-xtables-${ARCH}.tar /opt/xtables/k3s-root-xtables.tar
 RUN tar xvf /opt/xtables/k3s-root-xtables.tar -C /opt/xtables
-ARG TAG="v0.24.0"
+ARG TAG="v0.24.1"
 ARG PKG="github.com/flannel-io/flannel"
 ARG SRC="github.com/flannel-io/flannel"
 RUN git clone --depth=1 https://${SRC}.git $GOPATH/src/${PKG}
