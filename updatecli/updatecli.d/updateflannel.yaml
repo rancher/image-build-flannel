@@ -1,0 +1,77 @@
+---
+name: "Update flannel version" 
+
+sources:
+ flannel:
+   name: Get flannel version
+   kind: githubrelease
+   spec:
+     owner: flannel-io
+     repository: flannel
+     token: '{{ requiredEnv "UPDATECLI_GITHUB_TOKEN" }}'
+     username: '{{ requiredEnv "UPDATECLI_GITHUB_ACTOR" }}'
+     typefilter:
+       release: true
+       draft: false
+       prerelease: false
+     versionfilter:
+       kind: semver
+       # pattern accepts any semver constraint
+       pattern: "*"
+
+targets:
+  dockerfile:
+    name: "Bump to latest flannel version in Dockerfile"
+    kind: dockerfile
+    scmid: default
+    sourceid: flannel
+    spec:
+      file: "Dockerfile"
+      instruction:
+        keyword: "ARG"
+        matcher: "TAG"
+
+  makefile:
+    name: "Bump to latest flannel version in Makefile"
+    kind: file
+    scmid: default
+    disablesourceinput: true
+    spec:
+      file: Makefile
+      matchpattern: '(?m)^TAG \?\= (.*)'
+      replacepattern: 'TAG ?= {{ source "flannel" }}$$(BUILD_META)'
+
+  readme:
+    name: "Bump to latest flannel version in README"
+    kind: file
+    scmid: default
+    disablesourceinput: true
+    spec:
+      file: README.md
+      matchpattern: '(?m)^TAG=(.*)'
+      replacepattern: 'TAG={{ source "flannel" }} make'
+
+
+scms:
+  default:
+    kind: github
+    spec:
+      token: '{{ requiredEnv "UPDATECLI_GITHUB_TOKEN" }}'
+      username: '{{ requiredEnv "UPDATECLI_GITHUB_ACTOR" }}'
+      user: '{{ .github.username }}'
+      email: '{{ .github.email }}'
+      owner: '{{ .github.owner }}'
+      repository: '{{ .github.repository }}'
+      branch: '{{ .github.branch }}'
+      
+actions:
+    default:
+        title: 'Bump flannel version to {{ source "flannel" }}'
+        kind: github/pullrequest
+        spec:
+            automerge: false
+            labels:
+                - chore
+                - skip-changelog
+                - status/auto-created 
+        scmid: default
