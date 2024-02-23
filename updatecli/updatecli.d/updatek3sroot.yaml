@@ -8,7 +8,7 @@ sources:
    spec:
      owner: k3s-io
      repository: k3s-root
-     token: '{{ requiredEnv "UPDATECLI_GITHUB_TOKEN" }}'
+     token: '{{ requiredEnv .github.token }}'
      typefilter:
        release: true
        draft: false
@@ -44,9 +44,9 @@ scms:
   default:
     kind: github
     spec:
-      token: '{{ requiredEnv "UPDATECLI_GITHUB_TOKEN" }}'
+      token: '{{ requiredEnv .github.token }}'
       username: '{{ .github.username }}'
-      user: '{{  requiredEnv "UPDATECLI_GITHUB_ACTOR" }}'
+      user: '{{ .github.user }}'
       email: '{{ .github.email }}'
       owner: '{{ .github.owner }}'
       repository: '{{ .github.repository }}'
