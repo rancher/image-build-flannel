@@ -8,8 +8,7 @@ sources:
    spec:
      owner: flannel-io
      repository: flannel
-     token: '{{ requiredEnv "UPDATECLI_GITHUB_TOKEN" }}'
-     username: '{{ requiredEnv "UPDATECLI_GITHUB_ACTOR" }}'
+     token: '{{ requiredEnv .github.token }}'
      typefilter:
        release: true
        draft: false
@@ -56,8 +55,8 @@ scms:
   default:
     kind: github
     spec:
-      token: '{{ requiredEnv "UPDATECLI_GITHUB_TOKEN" }}'
-      username: '{{ requiredEnv "UPDATECLI_GITHUB_ACTOR" }}'
+      token: '{{ requiredEnv .github.token }}'
+      username: '{{ .github.username }}'
       user: '{{ .github.username }}'
       email: '{{ .github.email }}'
       owner: '{{ .github.owner }}'
