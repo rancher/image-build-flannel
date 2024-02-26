@@ -1,5 +1,5 @@
 ARG BCI_IMAGE=registry.suse.com/bci/bci-base
-ARG GO_IMAGE=v1.14.2
+ARG GO_IMAGE=v1.21.7b1
 FROM ${BCI_IMAGE} as bci
 FROM ${GO_IMAGE} as builder
 # setup required packages
