@@ -17,8 +17,8 @@ SRC ?= github.com/flannel-io/flannel
 TAG ?= v0.24.2$(BUILD_META)
 K3S_ROOT_VERSION ?= v0.13.0
 
-ifneq ($(DRONE_TAG),)
-	TAG := $(DRONE_TAG)
+ifneq ($(TAG),)
+	TAG := $(TAG)
 endif
 
 ifeq (,$(filter %$(BUILD_META),$(TAG)))
