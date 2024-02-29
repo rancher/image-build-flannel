@@ -40,17 +40,6 @@ targets:
       matchpattern: '(?m)^TAG \?\= (.*)'
       replacepattern: 'TAG ?= {{ source "flannel" }}$$(BUILD_META)'
 
-  readme:
-    name: "Bump to latest flannel version in README"
-    kind: file
-    scmid: default
-    disablesourceinput: true
-    spec:
-      file: README.md
-      matchpattern: '(?m)^TAG=(.*)'
-      replacepattern: 'TAG={{ source "flannel" }} make'
-
-
 scms:
   default:
     kind: github
