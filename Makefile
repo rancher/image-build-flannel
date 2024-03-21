@@ -14,7 +14,7 @@ BUILD_META=-build$(shell date +%Y%m%d)
 ORG ?= rancher
 PKG ?= github.com/flannel-io/flannel
 SRC ?= github.com/flannel-io/flannel
-TAG ?= v0.24.3$(BUILD_META)
+TAG ?= v0.24.4$(BUILD_META)
 K3S_ROOT_VERSION ?= v0.13.0
 
 ifeq (,$(filter %$(BUILD_META),$(TAG)))
