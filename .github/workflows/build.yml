@@ -7,11 +7,25 @@ on:
 name: Build
 jobs:
   build-amd64:
+    permissions:
+      contents: read
+      id-token: write
+
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+    
+    - name: "Read secrets"
+      uses: rancher-eio/read-vault-secrets@main
+      with:
+        secrets: |
+          secret/data/github/repo/${{ github.repository }}/dockerhub/${{ github.repository_owner }}/credentials username | DOCKER_USERNAME ;
+          secret/data/github/repo/${{ github.repository }}/dockerhub/${{ github.repository_owner }}/credentials password | DOCKER_PASSWORD
 
+    - name: "display secrets"
+      run: echo "${{ env.DOCKER_USERNAME }}"
+    
     - name: Set the TAG value
       id: get-TAG
       run: |
