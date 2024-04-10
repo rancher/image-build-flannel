@@ -4,6 +4,9 @@ on:
       - master
   pull_request:
 
+permissions:
+  contents: read  
+    
 name: Build
 jobs:
   build-amd64:
