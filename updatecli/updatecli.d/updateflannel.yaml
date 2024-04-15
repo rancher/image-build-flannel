@@ -14,9 +14,7 @@ sources:
        draft: false
        prerelease: false
      versionfilter:
-       kind: semver
-       # pattern accepts any semver constraint
-       pattern: "*"
+       kind: latest
 
 targets:
   dockerfile:
