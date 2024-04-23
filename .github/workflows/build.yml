@@ -35,7 +35,7 @@ jobs:
         severity: 'CRITICAL,HIGH'
 
   build-arm64:
-    runs-on: ubuntu-latest
+    runs-on: org--rancher--arm64-containers
     steps:
     - name: Check out code
       uses: actions/checkout@v4
