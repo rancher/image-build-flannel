@@ -15,7 +15,7 @@ RUN set -x && \
     linux-headers \
     make
 # setup the build
-ARG K3S_ROOT_VERSION=v0.13.0
+ARG K3S_ROOT_VERSION=v0.14.0
 RUN xx-info env
 RUN mkdir -p /opt/xtables/
 RUN export ARCH=$(xx-info arch) &&\

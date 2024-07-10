@@ -15,7 +15,7 @@ ORG ?= rancher
 PKG ?= github.com/flannel-io/flannel
 SRC ?= github.com/flannel-io/flannel
 TAG ?= ${GITHUB_ACTION_TAG}
-K3S_ROOT_VERSION ?= v0.13.0
+K3S_ROOT_VERSION ?= v0.14.0
 
 ifeq ($(TAG),)
 TAG := v0.25.4$(BUILD_META)
