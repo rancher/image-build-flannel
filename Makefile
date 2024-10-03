@@ -46,6 +46,7 @@ image-build:
 push-image:
 	docker buildx build \
 		$(BUILD_OPTS) \
+		$(IID_FILE_FLAG) \
 		--sbom=true \
 		--attest type=provenance,mode=max \
 		--push \
