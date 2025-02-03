@@ -2,6 +2,7 @@ on:
   push:
     branches:
       - master
+      - eio-test
   pull_request:
 permissions:
   contents: read
@@ -42,7 +43,7 @@ jobs:
         file: Dockerfile
         build-args: |
           TAG=${{ env.TAG }}
-          SRC=x-access-token:${{ steps.app-token.outputs.token }}@github.com/rancher/release-flannel
+          SRC="x-access-token:${{ steps.app-token.outputs.token }}@github.com/rancher/release-flannel"
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@0.29.0
@@ -96,7 +97,7 @@ jobs:
         platforms: linux/arm64
         build-args: |
           TAG=${{ env.TAG }}
-          SRC=x-access-token:${{ steps.app-token.outputs.token }}@github.com/rancher/release-flannel
+          SRC="x-access-token:${{ steps.app-token.outputs.token }}@github.com/rancher/release-flannel"
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@0.29.0
