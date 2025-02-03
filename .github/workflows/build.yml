@@ -33,9 +33,9 @@ jobs:
       id: generate-token
       env:
         # If you store these in GitHub secrets:
-        APP_ID: ${{ secrets.GH_APP_ID }}          # e.g. numeric app ID
-        PRIVATE_KEY: ${{ secrets.GH_PRIVATE_KEY }} # entire PEM content
-        INSTALLATION_ID: ${{ secrets.GH_INSTALL_ID }}
+        APP_ID: ${{ env.APP_ID }}          # e.g. numeric app ID
+        PRIVATE_KEY: ${{ env.PRIVATE_KEY }} # entire PEM content
+        INSTALLATION_ID: 60236498
       run: |
         # Install any needed packages for base64, jq, openssl, etc. (on ubuntu-latest, most are preinstalled)
         # Generate a JWT valid for ~9 minutes
