@@ -27,6 +27,7 @@ ARG SRC="github.com/flannel-io/flannel"
 RUN git clone --depth=1 https://${SRC}.git $GOPATH/src/${PKG}
 WORKDIR $GOPATH/src/${PKG}
 RUN git fetch --all --tags --prune
+RUN git tag -l
 RUN git checkout tags/${TAG} -b ${TAG}
 # build and assert statically linked executable(s)
 ENV GO_LDFLAGS="-X ${PKG}/version.Version=${TAG}"
