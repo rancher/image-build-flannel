@@ -7,6 +7,8 @@ on:
 permissions:
   contents: read
   id-token: write
+  checks: write
+
 name: Build
 jobs:
   build-amd64:
@@ -54,6 +56,23 @@ jobs:
       run: |
         curl -H "Authorization: token ${{ steps.app-token.outputs.token }}" \
         https://api.github.com/repos/rancher/release-flannel
+
+    - name: Generate JWT Manually
+      run: |
+        NOW=$(date +%s)
+        JWT_HEADER=$(echo -n '{"alg":"RS256","typ":"JWT"}' | base64 | tr -d '=' | tr '/+' '_-' | tr -d '\n')
+        JWT_PAYLOAD=$(echo -n "{\"iat\":$NOW,\"exp\":$(($NOW + 600)),\"iss\":$APP_ID}" | base64 | tr -d '=' | tr '/+' '_-' | tr -d '\n')
+        JWT_SIGNATURE=$(echo -n "$JWT_HEADER.$JWT_PAYLOAD" | openssl dgst -sha256 -sign <(echo "$PRIVATE_KEY") | base64 | tr -d '=' | tr '/+' '_-' | tr -d '\n')
+        echo "Manual JWT: $JWT_HEADER.$JWT_PAYLOAD.$JWT_SIGNATURE"
+    
+        echo "Testing manual JWT:"
+        curl -H "Authorization: Bearer $JWT_HEADER.$JWT_PAYLOAD.$JWT_SIGNATURE" \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/app/installations
+      env:
+        APP_ID: ${{ env.APP_ID }}
+        PRIVATE_KEY: ${{ env.PRIVATE_KEY }}
+    
     
     - name: Build container image
       uses: docker/build-push-action@v6
