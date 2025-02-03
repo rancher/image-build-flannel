@@ -2,7 +2,6 @@ on:
   push:
     branches:
       - master
-      - eio-test
   pull_request:
 permissions:
   contents: read
@@ -59,14 +58,7 @@ jobs:
           https://api.github.com/app/installations/$INSTALLATION_ID/access_tokens \
           | jq -r '.token')
         # Expose the token as an output so other steps can use it
-        echo "app_token=$INSTALL_TOKEN" >> $GITHUB_OUTPUT
-
-      # 2) Demonstrate using the token to verify you have access to a private repo
-    - name: Verify repo access
-      run: |
-        curl -i -H "Authorization: token ${{ steps.generate-token.outputs.app_token }}" \
-          https://api.github.com/repos/rancher/release-flannel
-        # If this returns 200, you have access. If 404, your App isn't installed on that repo.    
+        echo "app_token=$INSTALL_TOKEN" >> $GITHUB_OUTPUT  
     
     - name: Build container image
       uses: docker/build-push-action@v6
