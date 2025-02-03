@@ -108,14 +108,6 @@ jobs:
           secret/data/github/repo/${{ github.repository }}/github/release-app-credentials appId | APP_ID ;
           secret/data/github/repo/${{ github.repository }}/github/release-app-credentials privateKey | PRIVATE_KEY
 
-    - name: Create App Token
-      continue-on-error: true
-      uses: actions/create-github-app-token@v1
-      id: app-token
-      with:
-        app-id: ${{ env.APP_ID }}
-        private-key: ${{ env.PRIVATE_KEY }}
-
     - name: Set the TAG value
       id: get-TAG
       run: |
@@ -131,7 +123,7 @@ jobs:
         platforms: linux/arm64
         build-args: |
           TAG=${{ env.TAG }}
-          SRC="x-access-token:${{ steps.app-token.outputs.token }}@github.com/rancher/release-flannel"
+          SRC=x-access-token:${{ steps.generate-token.outputs.app_token }}@github.com/rancher/release-flannel
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@0.29.0
