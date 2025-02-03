@@ -24,60 +24,49 @@ jobs:
           secret/data/github/repo/${{ github.repository }}/github/release-app-credentials appId | APP_ID ;
           secret/data/github/repo/${{ github.repository }}/github/release-app-credentials privateKey | PRIVATE_KEY
 
-    - name: Create App Token
-      continue-on-error: false
-      uses: actions/create-github-app-token@v1
-      id: app-token
-      with:
-        app-id: ${{ env.APP_ID }}
-        private-key: ${{ env.PRIVATE_KEY }}
-
     - name: Set the TAG value
       id: get-TAG
       run: |
         echo "$(make -s log | grep TAG)" >> "$GITHUB_ENV"
 
-    - name: Verify App Installations
+    - name: Generate GitHub App token
+      id: generate-token
+      env:
+        # If you store these in GitHub secrets:
+        APP_ID: ${{ secrets.GH_APP_ID }}          # e.g. numeric app ID
+        PRIVATE_KEY: ${{ secrets.GH_PRIVATE_KEY }} # entire PEM content
+        INSTALLATION_ID: ${{ secrets.GH_INSTALL_ID }}
       run: |
-        echo "App installations:"
-        curl -H "Authorization: Bearer ${{ steps.app-token.outputs.token }}" \
-          -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/app/installations
+        # Install any needed packages for base64, jq, openssl, etc. (on ubuntu-latest, most are preinstalled)
+        # Generate a JWT valid for ~9 minutes
+        HEADER=$(echo -n '{"alg":"RS256","typ":"JWT"}' | base64 | tr -d '=' | tr '/+' '_-' | tr -d '\n')
+        NOW=$(date +%s)
+        EXP=$((NOW+540))  # 9 minutes from now (max allowed is 10)
+        PAYLOAD=$(echo -n "{\"iat\":$NOW,\"exp\":$EXP,\"iss\":$APP_ID}" | base64 | tr -d '=' | tr '/+' '_-' | tr -d '\n')
+          
+        # Sign the header.payload with your private key
+        SIGNATURE=$(echo -n "$HEADER.$PAYLOAD" \
+          | openssl dgst -sha256 -sign <(echo "$PRIVATE_KEY") \
+          | openssl base64 -A \
+          | tr -d '=' | tr '/+' '_-' | tr -d '\n')
+        
+        GH_APP_JWT="$HEADER.$PAYLOAD.$SIGNATURE"
 
-    - name: Inspect Token Scopes
-      run: |
-        echo "Token scopes: ${{ steps.app-token.outputs.scopes }}"
-        echo "Token permissions:"
-        curl -s -H "Authorization: token ${{ steps.app-token.outputs.token }}" \
-          -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/rate_limit | jq .resources
+        # Exchange the JWT for an installation token
+        INSTALL_TOKEN=$(curl -s -X POST \
+          -H "Authorization: Bearer $GH_APP_JWT" \
+          -H "Accept: application/vnd.github+json" \
+          https://api.github.com/app/installations/$INSTALLATION_ID/access_tokens \
+          | jq -r '.token')
+        # Expose the token as an output so other steps can use it
+        echo "app_token=$INSTALL_TOKEN" >> $GITHUB_OUTPUT
 
+      # 2) Demonstrate using the token to verify you have access to a private repo
     - name: Verify repo access
       run: |
-        curl -H "Authorization: token ${{ steps.app-token.outputs.token }}" \
-        https://api.github.com/repos/rancher/release-flannel
-
-    - name: Generate JWT Manually
-      run: |
-        NOW=$(date +%s)
-        JWT_HEADER=$(echo -n '{"alg":"RS256","typ":"JWT"}' | base64 | tr -d '=' | tr '/+' '_-' | tr -d '\n')
-        JWT_PAYLOAD=$(echo -n "{\"iat\":$NOW,\"exp\":$(($NOW + 600)),\"iss\":$APP_ID}" | base64 | tr -d '=' | tr '/+' '_-' | tr -d '\n')
-        JWT_SIGNATURE=$(echo -n "$JWT_HEADER.$JWT_PAYLOAD" | openssl dgst -sha256 -sign <(echo "$PRIVATE_KEY") | base64 | tr -d '=' | tr '/+' '_-' | tr -d '\n')
-        echo "Manual JWT: $JWT_HEADER.$JWT_PAYLOAD.$JWT_SIGNATURE"
-    
-        echo "Testing manual JWT:"
-        curl -H "Authorization: Bearer $JWT_HEADER.$JWT_PAYLOAD.$JWT_SIGNATURE" \
-          -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/app/installations
-      env:
-        APP_ID: ${{ env.APP_ID }}
-        PRIVATE_KEY: ${{ env.PRIVATE_KEY }}
-
-    - name: Test token
-      run: |
-        echo "${{ steps.app-token.outputs.token }}" | base64
-        curl -H "Authorization: token ${{ steps.app-token.outputs.token }}" \
-         https://api.github.com/repos/rancher/release-flannel
+        curl -i -H "Authorization: token ${{ steps.generate-token.outputs.app_token }}" \
+          https://api.github.com/repos/rancher/release-flannel
+        # If this returns 200, you have access. If 404, your App isn't installed on that repo.    
     
     - name: Build container image
       uses: docker/build-push-action@v6
@@ -88,7 +77,7 @@ jobs:
         file: Dockerfile
         build-args: |
           TAG=${{ env.TAG }}
-          SRC=x-access-token:${{ steps.app-token.outputs.token }}@github.com/rancher/release-flannel
+          SRC="x-access-token:${{ steps.generate-token.outputs.app_token }}@github.com/rancher/release-flannel"
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@0.29.0
@@ -120,7 +109,7 @@ jobs:
           secret/data/github/repo/${{ github.repository }}/github/release-app-credentials privateKey | PRIVATE_KEY
 
     - name: Create App Token
-      continue-on-error: false
+      continue-on-error: true
       uses: actions/create-github-app-token@v1
       id: app-token
       with:
@@ -142,7 +131,7 @@ jobs:
         platforms: linux/arm64
         build-args: |
           TAG=${{ env.TAG }}
-          SRC=x-access-token:${{ steps.app-token.outputs.token }}@github.com/rancher/release-flannel
+          SRC="x-access-token:${{ steps.app-token.outputs.token }}@github.com/rancher/release-flannel"
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@0.29.0
