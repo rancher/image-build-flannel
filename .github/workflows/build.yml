@@ -112,6 +112,39 @@ jobs:
       id: get-TAG
       run: |
         echo "$(make -s log | grep TAG)" >> "$GITHUB_ENV"
+
+    - name: Generate GitHub App token
+      id: generate-token
+      env:
+        # If you store these in GitHub secrets:
+        APP_ID: ${{ env.APP_ID }}          # e.g. numeric app ID
+        PRIVATE_KEY: ${{ env.PRIVATE_KEY }} # entire PEM content
+        INSTALLATION_ID: 60236498
+      run: |
+        # Install any needed packages for base64, jq, openssl, etc. (on ubuntu-latest, most are preinstalled)
+        # Generate a JWT valid for ~9 minutes
+        HEADER=$(echo -n '{"alg":"RS256","typ":"JWT"}' | base64 | tr -d '=' | tr '/+' '_-' | tr -d '\n')
+        NOW=$(date +%s)
+        EXP=$((NOW+540))  # 9 minutes from now (max allowed is 10)
+        PAYLOAD=$(echo -n "{\"iat\":$NOW,\"exp\":$EXP,\"iss\":$APP_ID}" | base64 | tr -d '=' | tr '/+' '_-' | tr -d '\n')
+          
+        # Sign the header.payload with your private key
+        SIGNATURE=$(echo -n "$HEADER.$PAYLOAD" \
+          | openssl dgst -sha256 -sign <(echo "$PRIVATE_KEY") \
+          | openssl base64 -A \
+          | tr -d '=' | tr '/+' '_-' | tr -d '\n')
+        
+        GH_APP_JWT="$HEADER.$PAYLOAD.$SIGNATURE"
+
+        # Exchange the JWT for an installation token
+        INSTALL_TOKEN=$(curl -s -X POST \
+          -H "Authorization: Bearer $GH_APP_JWT" \
+          -H "Accept: application/vnd.github+json" \
+          https://api.github.com/app/installations/$INSTALLATION_ID/access_tokens \
+          | jq -r '.token')
+        # Expose the token as an output so other steps can use it
+        echo "app_token=$INSTALL_TOKEN" >> $GITHUB_OUTPUT
+        
     - name: Build container image
       uses: docker/build-push-action@v6
       with:
