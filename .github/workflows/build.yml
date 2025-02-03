@@ -25,7 +25,7 @@ jobs:
           secret/data/github/repo/${{ github.repository }}/github/release-app-credentials privateKey | PRIVATE_KEY
 
     - name: Create App Token
-      continue-on-error: true
+      continue-on-error: false
       uses: actions/create-github-app-token@v1
       id: app-token
       with:
@@ -120,7 +120,7 @@ jobs:
           secret/data/github/repo/${{ github.repository }}/github/release-app-credentials privateKey | PRIVATE_KEY
 
     - name: Create App Token
-      continue-on-error: true
+      continue-on-error: false
       uses: actions/create-github-app-token@v1
       id: app-token
       with:
