@@ -3,7 +3,9 @@ on:
     branches:
       - master
   pull_request:
-
+permissions:
+  contents: read
+  id-token: write
 name: Build
 jobs:
   build-amd64:
