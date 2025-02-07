@@ -1,5 +1,5 @@
 ARG BCI_IMAGE=registry.suse.com/bci/bci-base
-ARG GO_IMAGE=rancher/hardened-build-base:v1.23.4b1
+ARG GO_IMAGE=rancher/hardened-build-base:v1.23.5b1
 FROM --platform=$BUILDPLATFORM tonistiigi/xx AS xx
 FROM --platform=$TARGETPLATFORM ${BCI_IMAGE} as bci
 FROM --platform=$TARGETPLATFORM ${GO_IMAGE} as builder
