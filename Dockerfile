@@ -18,7 +18,7 @@ RUN set -x && \
 FROM --platform=$BUILDPLATFORM base-builder AS builder
 # setup the build
 ARG K3S_ROOT_VERSION=v0.14.1
-ARG TAG=v0.27.2
+ARG TAG=v0.27.3
 ARG PKG="github.com/flannel-io/flannel"
 ARG SRC="github.com/flannel-io/flannel"
 RUN git clone --depth=1 https://${SRC}.git $GOPATH/src/${PKG}
