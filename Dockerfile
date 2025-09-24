@@ -26,31 +26,33 @@ WORKDIR $GOPATH/src/${PKG}
 RUN git fetch --all --tags --prune
 RUN git checkout tags/${TAG} -b ${TAG}
 RUN go mod download
-ARG TARGETPLATFORM
+ARG TARGETARCH
+ARG TARGETOS
 # build and assert statically linked executable(s)
 ENV GO_LDFLAGS="-X ${PKG}/version.Version=${TAG}"
-RUN export GOOS=$(xx-info os) &&\
-    export GOARCH=$(xx-info arch) &&\
-    export ARCH=$(xx-info arch) && \
-    if [ "$(xx-info arch)" = "amd64" ]; then \
+RUN export GOOS=${TARGETOS} &&\
+    export GOARCH=${TARGETARCH} &&\
+    export ARCH=${TARGETARCH} && \
+    if [ "${TARGETARCH}" = "amd64" ]; then \
         go-build-static.sh -gcflags=-trimpath=${GOPATH}/src -o bin/flanneld .; \
     else \
         # flannel doesn't compile with CGO_ENABLED=1 when the arch is not amd64
         CGO_ENABLED=0  go build -ldflags "-extldflags \"-static -Wl,--fatal-warnings\" ${GO_LDFLAGS}" -gcflags=-trimpath=${GOPATH}/src -o bin/flanneld .; \
     fi
-RUN export GOOS=$(xx-info os) &&\
-    export GOARCH=$(xx-info arch) &&\
-    export ARCH=$(xx-info arch) &&\
+RUN export GOOS=${TARGETOS}} &&\
+    export GOARCH=${TARGETARCH} &&\
+    export ARCH=${TARGETARCH} &&\
     go-assert-static.sh bin/*
-RUN if [ "$(xx-info arch)" = "amd64" ]; then \
+RUN if [ "${TARGETARCH}" = "amd64" ]; then \
         go-assert-boring.sh bin/* ; \
     fi
 
 # Get xtables files from k3s-root
 RUN mkdir -p /opt/xtables/
-RUN export ARCH=$(xx-info arch) &&\
-    wget https://github.com/rancher/k3s-root/releases/download/${K3S_ROOT_VERSION}/k3s-root-xtables-${ARCH}.tar -O /opt/xtables/k3s-root-xtables.tar
-RUN tar xvf /opt/xtables/k3s-root-xtables.tar -C /opt/xtables
+ADD https://github.com/k3s-io/k3s-root/releases/download/${K3S_ROOT_VERSION}/k3s-root-${TARGETARCH}.tar /opt/k3s-root/k3s-root.tar
+# exclude 'mount' and 'modprobe' when unpacking the archive
+RUN tar xvf /opt/k3s-root/k3s-root.tar -C /opt/xtables --strip-components=3 --exclude=./bin/aux/mo* './bin/aux/'
+RUN ls /opt/xtables
 
 FROM ${GO_IMAGE} AS strip_binary
 #strip needs to run on TARGETPLATFORM, not BUILDPLATFORM
@@ -58,5 +60,5 @@ COPY --from=builder /go/src/github.com/flannel-io/flannel/bin/flanneld /flanneld
 RUN strip /flanneld
 
 FROM bci
-COPY --from=builder /opt/xtables/bin/ /usr/sbin/
+COPY --from=builder /opt/xtables/ /usr/sbin/
 COPY --from=strip_binary /flanneld /opt/bin/
