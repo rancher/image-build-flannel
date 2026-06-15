@@ -28,7 +28,7 @@ jobs:
           private-key: ${{ env.PRIVATE_KEY }}
 
       - name: Sync Upstream Releases
-        uses: rancher/ecm-distro-tools/actions/sync-upstream-release@c18ec6e792ff7821d496ef6a7229643165fece81 # v0.73.0
+        uses: rancher/ecm-distro-tools/actions/sync-upstream-release@c7c07fc1b7ca15c3a8fca06899a6a5657d34ac35 # v0.74.0
         with:
           upstream-owner: 'flannel-io'
           upstream-repo: 'flannel'
