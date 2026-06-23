@@ -15,9 +15,16 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
+    groups:
+      action-deps:
+        patterns:
+          - "*"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-patch"
     labels:
       - "kind/dependabot"
     reviewers:
       - "rancher/k3s"
-
