@@ -15,7 +15,7 @@ BUILD_META=-build$(shell date +%Y%m%d)
 PKG ?= github.com/flannel-io/flannel
 SRC ?= github.com/flannel-io/flannel
 TAG ?= ${GITHUB_ACTION_TAG}
-K3S_ROOT_VERSION ?= v0.15.0
+K3S_ROOT_VERSION ?= v0.15.2
 
 ifeq ($(TAG),)
 TAG := v0.28.5$(BUILD_META)
