@@ -1,4 +1,5 @@
-ARG BCI_IMAGE=registry.suse.com/bci/bci-nano:16.0
+#bci-busybox is required because we need 'cp' when copying files in the init container
+ARG BCI_IMAGE=registry.suse.com/bci/bci-busybox:16.0
 ARG GO_IMAGE=rancher/hardened-build-base:v1.25.11b1
 ARG XX_IMAGE=rancher/mirrored-tonistiigi-xx:1.6.1
 
