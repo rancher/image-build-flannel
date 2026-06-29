@@ -18,7 +18,7 @@ RUN set -x && \
 
 FROM --platform=$BUILDPLATFORM base-builder AS builder
 # setup the build
-ARG K3S_ROOT_VERSION=v0.15.0
+ARG K3S_ROOT_VERSION=v0.15.2
 ARG TAG=v0.28.5
 ARG PKG="github.com/flannel-io/flannel"
 ARG SRC="github.com/flannel-io/flannel"
