@@ -1,5 +1,4 @@
-#bci-busybox is required because we need 'cp' when copying files in the init container
-ARG BCI_IMAGE=registry.suse.com/bci/bci-busybox:16.0
+ARG BCI_IMAGE=registry.suse.com/bci/bci-nano:16.0
 ARG GO_IMAGE=rancher/hardened-build-base:v1.25.11b1
 ARG XX_IMAGE=rancher/mirrored-tonistiigi-xx:1.6.1
 
@@ -19,7 +18,7 @@ RUN set -x && \
 FROM --platform=$BUILDPLATFORM base-builder AS builder
 # setup the build
 ARG K3S_ROOT_VERSION=v0.15.2
-ARG TAG=v0.28.5
+ARG TAG=v0.28.6
 ARG PKG="github.com/flannel-io/flannel"
 ARG SRC="github.com/flannel-io/flannel"
 RUN git clone --depth=1 https://${SRC}.git $GOPATH/src/${PKG}
@@ -40,12 +39,19 @@ RUN export GOOS=${TARGETOS} &&\
         # flannel doesn't compile with CGO_ENABLED=1 when the arch is not amd64
         CGO_ENABLED=0  go build -ldflags "-extldflags \"-static -Wl,--fatal-warnings\" ${GO_LDFLAGS}" -gcflags=-trimpath=${GOPATH}/src -o bin/flanneld .; \
     fi
+RUN export GOOS=$(xx-info os) &&\
+    export GOARCH=$(xx-info arch) &&\
+    if [ "${TARGETARCH}" = "amd64" ]; then \
+        go-build-static.sh -gcflags=-trimpath=${GOPATH}/src -o bin/install-conf ./cmd/install_conf/; \
+    else \
+        CGO_ENABLED=0  go build -ldflags "-extldflags \"-static -Wl,--fatal-warnings\" ${GO_LDFLAGS}" -gcflags=-trimpath=${GOPATH}/src -o bin/install-conf ./cmd/install_conf/; \
+    fi
 RUN export GOOS=${TARGETOS}} &&\
     export GOARCH=${TARGETARCH} &&\
     export ARCH=${TARGETARCH} &&\
     go-assert-static.sh bin/*
 RUN if [ "${TARGETARCH}" = "amd64" ]; then \
-        go-assert-boring.sh bin/* ; \
+        go-assert-boring.sh bin/flanneld ; \
     fi
 
 # Get xtables files from k3s-root
