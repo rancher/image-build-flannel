@@ -64,8 +64,11 @@ RUN ls /opt/xtables
 FROM ${GO_IMAGE} AS strip_binary
 #strip needs to run on TARGETPLATFORM, not BUILDPLATFORM
 COPY --from=builder /go/src/github.com/flannel-io/flannel/bin/flanneld /flanneld
+COPY --from=builder /go/src/github.com/flannel-io/flannel/bin/install-conf /install-conf
 RUN strip /flanneld
+RUN strip /install-conf
 
 FROM bci
 COPY --from=builder /opt/xtables/ /usr/sbin/
 COPY --from=strip_binary /flanneld /opt/bin/
+COPY --from=strip_binary /install-conf /opt/bin/
