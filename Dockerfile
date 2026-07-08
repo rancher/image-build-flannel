@@ -1,6 +1,6 @@
 # bci-busybox is needed to run iptables-detect.sh when the container starts
 ARG BCI_IMAGE=registry.suse.com/bci/bci-busybox:16.0
-ARG GO_IMAGE=rancher/hardened-build-base:v1.25.11b1
+ARG GO_IMAGE=rancher/hardened-build-base:v1.25.12b1
 ARG XX_IMAGE=rancher/mirrored-tonistiigi-xx:1.6.1
 
 FROM --platform=$BUILDPLATFORM ${XX_IMAGE} AS xx
@@ -26,6 +26,8 @@ RUN git clone --depth=1 https://${SRC}.git $GOPATH/src/${PKG}
 WORKDIR $GOPATH/src/${PKG}
 RUN git fetch --all --tags --prune
 RUN git checkout tags/${TAG} -b ${TAG}
+COPY go-mod-overrides ./go-mod-overrides
+RUN go-mod-overrides.sh ./go-mod-overrides
 RUN go mod download
 ARG TARGETARCH
 ARG TARGETOS
