@@ -4,7 +4,6 @@ ARG GO_IMAGE=rancher/hardened-build-base:v1.25.12b1
 ARG XX_IMAGE=rancher/mirrored-tonistiigi-xx:1.6.1
 
 FROM --platform=$BUILDPLATFORM ${XX_IMAGE} AS xx
-FROM ${BCI_IMAGE} AS bci
 
 FROM --platform=$BUILDPLATFORM ${GO_IMAGE} AS base-builder
 # setup required packages
@@ -71,7 +70,7 @@ COPY --from=builder /go/src/github.com/flannel-io/flannel/bin/install-conf /inst
 RUN strip /flanneld
 RUN strip /install-conf
 
-FROM bci
+FROM ${BCI_IMAGE}
 COPY --from=builder /opt/xtables/ /usr/sbin/
 COPY --from=strip_binary /flanneld /opt/bin/
 COPY --from=strip_binary /install-conf /opt/bin/
