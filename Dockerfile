@@ -21,7 +21,8 @@ ARG K3S_ROOT_VERSION=v0.15.2
 ARG TAG=v0.28.7
 ARG PKG="github.com/flannel-io/flannel"
 ARG SRC="github.com/flannel-io/flannel"
-RUN git clone --depth=1 https://${SRC}.git $GOPATH/src/${PKG}
+ARG PKG="github.com/flannel-io/flannel"
+RUN git clone --depth=1 https://${PKG}.git $GOPATH/src/${PKG}
 WORKDIR $GOPATH/src/${PKG}
 RUN git fetch --all --tags --prune
 RUN git checkout tags/${TAG} -b ${TAG}
