@@ -49,13 +49,21 @@ RUN export GOOS=$(xx-info os) &&\
     else \
         CGO_ENABLED=0  go build -ldflags "-extldflags \"-static -Wl,--fatal-warnings\" ${GO_LDFLAGS}" -gcflags=-trimpath=${GOPATH}/src -o bin/install-conf ./cmd/install_conf/; \
     fi
-RUN export GOOS=${TARGETOS}} &&\
+RUN export GOOS=${TARGETOS} &&\
     export GOARCH=${TARGETARCH} &&\
     export ARCH=${TARGETARCH} &&\
     go-assert-static.sh bin/*
 RUN if [ "${TARGETARCH}" = "amd64" ]; then \
         go-assert-boring.sh bin/flanneld ; \
     fi
+
+RUN git clone https://github.com/kubernetes-sigs/iptables-wrappers.git /iptables-wrapper
+WORKDIR /iptables-wrapper
+RUN git checkout bfef9e5087a198b50a4124bb9ce9d2c7c99025dd
+RUN export GOOS=$(xx-info os) &&\
+    export GOARCH=$(xx-info arch) &&\
+    export ARCH=$(xx-info arch) &&\
+    make build
 
 # Get xtables files from k3s-root
 RUN mkdir -p /opt/xtables/
@@ -75,3 +83,8 @@ FROM ${BCI_IMAGE}
 COPY --from=builder /opt/xtables/ /usr/sbin/
 COPY --from=strip_binary /flanneld /opt/bin/
 COPY --from=strip_binary /install-conf /opt/bin/
+COPY --from=builder /iptables-wrapper/bin/iptables-wrapper /usr/sbin
+# check manually that iptables-legacy and iptables-nft are present since
+# iptables-wrapper-installer.sh sanity check doesn't work for multi-arch build
+RUN which iptables-legacy && which iptables-nft
+RUN /usr/sbin/iptables-wrapper install
