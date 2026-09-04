@@ -10,3 +10,7 @@
 # CVE-2026-56855/78662 (ssh channel DoS) — golang.org/x/crypto/ssh.
 # Drop once upstream requires golang.org/x/crypto >= v0.56.0.
 -replace golang.org/x/crypto=golang.org/x/crypto@v0.56.0
+
+# google.golang.org/grpc: CVE-2026-84304 (HIGH); bump to v1.83.1.
+# Drop once upstream requires google.golang.org/grpc >= v1.83.1.
+-replace google.golang.org/grpc=google.golang.org/grpc@v1.83.1
