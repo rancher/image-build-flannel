@@ -11,6 +11,6 @@
 # Drop once upstream requires golang.org/x/crypto >= v0.56.0.
 -replace golang.org/x/crypto=golang.org/x/crypto@v0.56.0
 
-# google.golang.org/grpc: CVE-2026-84304 (HIGH); bump to v1.83.1.
-# Drop once upstream requires google.golang.org/grpc >= v1.83.1.
--replace google.golang.org/grpc=google.golang.org/grpc@v1.83.1
+# google.golang.org/grpc: CVE-2026-84304 (HIGH), CVE-2026-84445 (HIGH, xDS server DoS); bump to v1.83.2.
+# Drop once upstream requires google.golang.org/grpc >= v1.83.2.
+-replace google.golang.org/grpc=google.golang.org/grpc@v1.83.2
