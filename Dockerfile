@@ -20,8 +20,6 @@ FROM --platform=$BUILDPLATFORM base-builder AS builder
 ARG K3S_ROOT_VERSION=v0.15.2
 ARG TAG
 ARG PKG="github.com/flannel-io/flannel"
-ARG SRC="github.com/flannel-io/flannel"
-ARG PKG="github.com/flannel-io/flannel"
 RUN git clone --depth=1 https://${PKG}.git $GOPATH/src/${PKG}
 WORKDIR $GOPATH/src/${PKG}
 RUN git fetch --all --tags --prune
