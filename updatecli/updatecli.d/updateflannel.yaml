@@ -17,17 +17,6 @@ sources:
        kind: semver
 
 targets:
-  dockerfile:
-    name: "Bump to latest flannel version in Dockerfile"
-    kind: dockerfile
-    scmid: default
-    sourceid: flannel
-    spec:
-      file: "Dockerfile"
-      instruction:
-        keyword: "ARG"
-        matcher: "TAG"
-
   tagfile:
     name: "Bump to latest flannel version in TAG"
     kind: file
