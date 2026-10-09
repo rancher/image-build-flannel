@@ -1,16 +1,8 @@
-# golang.org/x/net: CVE-2026-33814 (net/http2 DoS), CVE-2026-39821 (x/net/idna punycode), CVE-2026-46600 (x/net/dns/dnsmessage panic parsing invalid SVCB or HTTPS RR).
-# Drop once upstream requires golang.org/x/net >= v0.56.0.
--replace golang.org/x/net=golang.org/x/net@v0.56.0
-
-# golang.org/x/text: CVE-2026-56852 (infinite loop on invalid input).
-# Drop once upstream requires golang.org/x/text >= v0.39.0.
--replace golang.org/x/text=golang.org/x/text@v0.39.0
+# golang.org/x/net: CVE-2026-78659, CVE-2026-78660, CVE-2026-78663, CVE-2026-78669, CVE-2026-97032 (x/net/http2 DoS/crash).
+# Drop once upstream requires golang.org/x/net >= v0.60.0.
+-replace golang.org/x/net=golang.org/x/net@v0.60.0
 
 # golang.org/x/crypto: CVE-2026-56854 (CRITICAL, ssh source-address auth bypass),
 # CVE-2026-56855/78662 (ssh channel DoS) — golang.org/x/crypto/ssh.
 # Drop once upstream requires golang.org/x/crypto >= v0.56.0.
 -replace golang.org/x/crypto=golang.org/x/crypto@v0.56.0
-
-# google.golang.org/grpc: CVE-2026-84304 (HIGH), CVE-2026-84445 (HIGH, xDS server DoS); bump to v1.83.2.
-# Drop once upstream requires google.golang.org/grpc >= v1.83.2.
--replace google.golang.org/grpc=google.golang.org/grpc@v1.83.2
