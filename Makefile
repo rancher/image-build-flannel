@@ -13,7 +13,7 @@ endif
 
 BUILD_META=-build$(shell date +%Y%m%d)
 TAG ?= ${GITHUB_ACTION_TAG}
-K3S_ROOT_VERSION ?= v0.15.2
+K3S_ROOT_VERSION ?= v0.15.3
 
 ifeq ($(TAG),)
 TAG := $(shell cat TAG)$(BUILD_META)
